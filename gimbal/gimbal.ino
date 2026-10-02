@@ -6,6 +6,7 @@ byte lowByte;
 byte highByte;
 int16_t accelX;
 int16_t accelY;
+float userInput;
 
 Servo servo;
 
@@ -14,6 +15,7 @@ void setup() {
   Serial.begin(9600);
   servo.attach(9);
   servo.write(90);
+  //delay(3000);
   Wire.begin();
   Wire.beginTransmission(MPU_ADDR);
   Wire.write(0x6B); // first = register byte
@@ -30,6 +32,14 @@ void setup() {
 }
 
 void loop() {
+
+  if (Serial.available() > 0) {
+    userInput = Serial.parseFloat();
+        while (Serial.available() > 0) {
+      Serial.read(); // Clear the leftover newline
+    }
+  }
+
   // put your main code here, to run repeatedly:
   Wire.beginTransmission((MPU_ADDR));
   Wire.write(0x3B); // address of ACCEL_XOUT_H
@@ -53,10 +63,14 @@ void loop() {
   Serial.print(" Y: ");
   Serial.print(accelY);
   Serial.print(" Calculated Angle: ");
-  Serial.println(angleYandX);
+  Serial.print(angleYandX);
+  Serial.print(" Offset: ");
+  Serial.println(userInput);
+  // Serial.print(" 180 - Calculated Angle: ");
+  // Serial.println(angleYandX);
 
-  servo.write((-1)*angleYandX);
-  delay(100);
+
+  servo.write(angleYandX-userInput);
 
   //delay(500);
 
