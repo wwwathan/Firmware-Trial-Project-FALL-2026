@@ -8,6 +8,7 @@ byte highByte;
 int16_t accelX;
 int16_t accelY;
 Servo servo;
+int angleOffset;
 
 void setup() {
 
@@ -34,6 +35,15 @@ void setup() {
 
 void loop() {
 
+    // ---- INPUT MONITORING ----
+  if (Serial.available() > 0) {
+    angleOffset = Serial.parseFloat(); // angle offset = input
+
+    while (Serial.available() > 0) {
+      Serial.read(); // read any unwanted newline before reading angleOffset again
+    }
+  }
+
   // ---- SELECT TARGET ADDRESS ----
   Wire.beginTransmission((MPU_ADDR));
   Wire.write(0x3B); // address of ACCEL_XOUT_H
@@ -59,8 +69,10 @@ void loop() {
   Serial.print(" Y: ");
   Serial.print(accelY);
   Serial.print(" Calculated Angle: ");
-  Serial.println(angleYandX);
+  Serial.print(angleYandX);
+  Serial.print(" Offset: ");
+  Serial.println(angleOffset);
 
   // ---- WRITE CORRECT ANGLE TO SERVO -----
-  servo.write((-1)*angleYandX);
+  servo.write(angleYandX-angleOffset);
 }
