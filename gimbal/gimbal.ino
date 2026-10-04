@@ -40,7 +40,7 @@ void loop() {
   Wire.endTransmission(false); // keep I2C connection open
 
   // ---- START REQUESTING DATA ----
-  Wire.requestFrom(0x68, 4, true); // ask mpu6050 for 24bytes to be sent over
+  Wire.requestFrom(0x68, 4, true); // ask mpu6050 for 4 bytes to be sent over
   if (Wire.available()) { // checks if there's available bits to be received
     highByte = Wire.read(); // first byte sent over is high byte
     lowByte = Wire.read(); // second byte sent over is low byte
